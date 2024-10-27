@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gráfico de Perda de Peso</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #chartContainer {
+      width: 80%;
+      max-width: 600px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Seu Gráfico de Perda de Peso</h2>
+
+  <label for="pesoInicial">Peso inicial (kg):</label>
+  <input type="number" id="pesoInicial" placeholder="Ex: 100">
+
+  <label for="pesoFinal">Peso desejado (kg):</label>
+  <input type="number" id="pesoFinal" placeholder="Ex: 80">
+
+  <button onclick="gerarGrafico()">Gerar Gráfico</button>
+
+  <div id="chartContainer">
+    <canvas id="weightLossChart"></canvas>
+  </div>
+
+  <script>
+    function gerarGrafico() {
+      // Coleta os dados de entrada do usuário
+      const pesoInicial = parseFloat(document.getElementById('pesoInicial').value);
+      const pesoFinal = parseFloat(document.getElementById('pesoFinal').value);
+
+      // Calcula os pontos de perda de peso
+      const pesoComBioma = [pesoInicial, pesoInicial - (pesoInicial - pesoFinal) * 0.6, pesoFinal];
+      const pesoComDieta = [pesoInicial, pesoInicial - (pesoInicial - pesoFinal) * 0.4, pesoFinal + 5];
+
+      // Remove qualquer gráfico anterior para gerar um novo
+      const chartCanvas = document.getElementById('weightLossChart');
+      if (window.myChart) {
+        window.myChart.destroy();
+      }
+
+      // Configuração do gráfico com Chart.js
+      window.myChart = new Chart(chartCanvas, {
+        type: 'line',
+        data: {
+          labels: ['Hoje', 'Dia 30', 'Dia 60+'],
+          datasets: [
+            {
+              label: 'Com Bioma',
+              data: pesoComBioma,
+              borderColor: 'green',
+              backgroundColor: 'rgba(76, 175, 80, 0.1)',
+              fill: true,
+              tension: 0.4,
+              pointStyle: 'circle',
+              pointRadius: 6,
+              pointHoverRadius: 8
+            },
+            {
+              label: 'Com Dieta',
+              data: pesoComDieta,
+              borderColor: 'red',
+              backgroundColor: 'rgba(255, 99, 132, 0.1)',
+              fill: false,
+              tension: 0.4,
+              pointStyle: 'circle',
+              pointRadius: 6,
+              pointHoverRadius: 8
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            },
+            title: {
+              display: true,
+              text: 'Seu Ritmo de Perda de Peso'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.dataset.label + ': ' + context.raw + ' kg';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              title: {
+                display: true,
+                text: 'Peso (kg)'
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Dias'
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
